@@ -1,19 +1,43 @@
 apply plugin: 'com.android.library'
+apply plugin: 'digital.wup.android-maven-publish'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 6
-        versionName "1.0.1"
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+def snapshot = !project.hasProperty('release')
+group = 'com.smartmobilelabs.evo.android.playersdk'
+version = snapshot ? "$rootProject.ext.versionName-sml$rootProject.ext.smlVersionName-SNAPSHOT"
+        : "$rootProject.ext.versionName-sml$rootProject.ext.smlVersionName"
+
+publishing {
+    repositories {
+        maven {
+            url snapshot ? "$rootProject.buildDir/repo/snapshots" : "$rootProject.buildDir/repo/releases"
+//            url snapshot ? SmlNexusSnapshotRepo : SmlNexusReleaseRepo
+//            credentials {
+//                username SmlNexusUser
+//                password SmlNexusPw
+//            }
+        }
+    }
+    publications {
+        mavenAar(MavenPublication) {
+            from components.android
         }
     }
 }
