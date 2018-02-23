@@ -27,12 +27,12 @@ version = snapshot ? "$rootProject.ext.versionName-sml$rootProject.ext.smlVersio
 publishing {
     repositories {
         maven {
-            url snapshot ? "$rootProject.buildDir/repo/snapshots" : "$rootProject.buildDir/repo/releases"
-//            url snapshot ? SmlNexusSnapshotRepo : SmlNexusReleaseRepo
-//            credentials {
-//                username SmlNexusUser
-//                password SmlNexusPw
-//            }
+//            url snapshot ? "$rootProject.buildDir/repo/snapshots" : "$rootProject.buildDir/repo/releases"
+            url snapshot ? SmlNexusSnapshotRepo : SmlNexusReleaseRepo
+            credentials {
+                username SmlNexusUser
+                password SmlNexusPw
+            }
         }
     }
     publications {
