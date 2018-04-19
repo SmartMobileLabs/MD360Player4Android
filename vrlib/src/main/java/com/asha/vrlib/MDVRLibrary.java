@@ -95,6 +95,7 @@ public class MDVRLibrary {
     private MDGLHandler mGLHandler;
     private MDDirectorCamUpdate mDirectorCameraUpdate;
     private MDDirectorFilter mDirectorFilter;
+    private MD360Renderer renderer;
 
     private MDVRLibrary(Builder builder) {
 
@@ -236,7 +237,7 @@ public class MDVRLibrary {
             screenWrapper.init(context);
             // Request an OpenGL ES 2.0 compatible context.
 
-            MD360Renderer renderer = MD360Renderer.with(context)
+            renderer = MD360Renderer.with(context)
                     .setGLHandler(mGLHandler)
                     .setPluginManager(mPluginManager)
                     .setProjectionModeManager(mProjectionModeManager)
@@ -300,6 +301,20 @@ public class MDVRLibrary {
         mDisplayModeManager.switchMode(context, mode);
     }
 
+    public void setViewSizeMm(float x, float y)
+    {
+        if (renderer != null)
+        {
+            renderer.setViewSizeMm(x,y);
+        }
+    }
+    public void setLensDistance(int mm_distance)
+    {
+        if (renderer != null)
+        {
+            renderer.setDistance(mm_distance);
+        }
+    }
     /**
      * Switch Projection Mode
      *

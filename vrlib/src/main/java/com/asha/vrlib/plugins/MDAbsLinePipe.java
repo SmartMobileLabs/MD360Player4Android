@@ -13,6 +13,11 @@ public abstract class MDAbsLinePipe {
 
     private boolean mIsInit;
     private long mTid;
+    protected int distance;
+    public void setDistance(int d)
+    {
+        distance = d;
+    }
 
     // MDPosition position = MDPosition.sOriginalPosition;
 

@@ -38,6 +38,11 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 	private Fps mFps = new Fps();
 	private int mWidth;
 	private int mHeight;
+	private float  distance_mm;
+	private float x_view_size_mm;
+	private float y_view_size_mm;
+	private float scaling_factor;
+	private int distance;
 
 	// private MDBarrelDistortionPlugin mBarrelDistortionPlugin;
 
@@ -52,8 +57,20 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 		mGLHandler = params.glHandler;
 
 		mMainLinePipe = new MDBarrelDistortionLinePipe(mDisplayModeManager);
+		scaling_factor = mDisplayModeManager.getBarrelDistortionConfig().getScale();
+		distance_mm = 0;
 	}
 
+	public void setViewSizeMm(float x, float y)
+    {
+        x_view_size_mm = x;
+        y_view_size_mm = y;
+        calculateDistance();
+    }
+	public void setDistance(int d)
+    {
+        distance_mm = d;
+    }
 	@Override
 	public void onSurfaceCreated(GL10 glUnused, EGLConfig config){
 		// set the background clear color to black.
@@ -66,11 +83,26 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 		// GLES20.glEnable(GLES20.GL_DEPTH_TEST);
 	}
 
+	private void calculateDistance()
+    {
+        if (x_view_size_mm != 0 && y_view_size_mm != 0  && mHeight != 0 && mWidth != 0)
+        {
+               // 2*h + distance = lens_distance
+               // 4*h + distance = mWidth  where d is the pixel distance between the views,
+               // h is half the width of the resulting eye view -> solve for d
+               int pixel_lens_distance =  (int)(distance_mm / x_view_size_mm * mWidth);
+               distance = (2 * pixel_lens_distance - mWidth);
+               if (distance < 0)
+               {
+                   distance = 0;
+               }
+        }
+    }
 	@Override
 	public void onSurfaceChanged(GL10 glUnused, int width, int height){
 		this.mWidth = width;
 		this.mHeight = height;
-
+        calculateDistance();
 		mGLHandler.dealMessage();
 	}
 
@@ -86,11 +118,12 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 
 		int size = mDisplayModeManager.getVisibleSize();
 
-		int width = (int) (this.mWidth * 1.0f / size);
+		int width = (int) ((this.mWidth - distance)* 1.0f / size);
 		int height = mHeight;
 
 		// take over
 		mMainLinePipe.setup(mContext);
+		mMainLinePipe.setDistance(distance);
 		mMainLinePipe.takeOver(mWidth,mHeight,size);
 
 		List<MD360Director> directors = mProjectionModeManager.getDirectors();
@@ -111,9 +144,9 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 			if (i >= directors.size()) break;
 
 			MD360Director director = directors.get(i);
-			GLES20.glViewport(width * i, 0, width, height);
+			GLES20.glViewport((width + distance)* i, 0, width, height);
 			GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
-			GLES20.glScissor(width * i, 0, width, height);
+			GLES20.glScissor((width + distance) * i, 0, width, height);
 
 			if (mainPlugin != null){
 				mainPlugin.renderer(i, width, height, director);

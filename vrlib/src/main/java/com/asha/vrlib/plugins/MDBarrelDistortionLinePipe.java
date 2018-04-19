@@ -47,6 +47,9 @@ public class MDBarrelDistortionLinePipe extends MDAbsLinePipe {
 
     private DisplayModeManager mDisplayModeManager;
 
+    private float distorted_minx;
+    private float distorted_maxx;
+
     public MDBarrelDistortionLinePipe(DisplayModeManager displayModeManager) {
         mDisplayModeManager = displayModeManager;
         mConfiguration = displayModeManager.getBarrelDistortionConfig();
@@ -54,6 +57,9 @@ public class MDBarrelDistortionLinePipe extends MDAbsLinePipe {
         mDirector = new MD360DirectorFactory.OrthogonalImpl().createDirector(0);
         object3D = new MDBarrelDistortionMesh();
         mDrawingCache = new MDDrawingCache();
+        distorted_minx = 100000;
+        distorted_maxx = 0;
+
     }
 
     @Override
@@ -85,11 +91,11 @@ public class MDBarrelDistortionLinePipe extends MDAbsLinePipe {
         }
         mDrawingCache.unbind();
 
-        int width = totalWidth / size;
+        int width = (totalWidth - distance) / size;
         for (int i = 0; i < size; i++){
-            GLES20.glViewport(width * i, 0, width, totalHeight);
+            GLES20.glViewport((width  + distance)* i, 0, width, totalHeight);
             GLES20.glEnable(GLES20.GL_SCISSOR_TEST);
-            GLES20.glScissor(width * i, 0, width, totalHeight);
+            GLES20.glScissor((width + distance)* i, 0, width, totalHeight);
             draw(i);
             GLES20.glDisable(GLES20.GL_SCISSOR_TEST);
         }
@@ -268,6 +274,14 @@ public class MDBarrelDistortionLinePipe extends MDAbsLinePipe {
                 vertexs[xIndex] = pointF.x * mConfiguration.getScale();
                 vertexs[yIndex] = pointF.y * mConfiguration.getScale();
 
+                if (vertexs[xIndex] < distorted_minx)
+                {
+                    distorted_minx = pointF.x;
+                }
+                if (vertexs[xIndex] > distorted_maxx)
+                {
+                    distorted_maxx = pointF.x;
+                }
                 // Log.e(TAG,String.format("%f %f => %f %f",xValue,yValue,pointF.x,pointF.y));
             }
         }
