@@ -90,6 +90,8 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
                // 2*h + distance = lens_distance
                // 4*h + distance = mWidth  where d is the pixel distance between the views,
                // h is half the width of the resulting eye view -> solve for d
+               // first calc the actual size of the surface into which is rendered
+
                int pixel_lens_distance =  (int)(distance_mm / x_view_size_mm * mWidth);
                distance = (2 * pixel_lens_distance - mWidth);
                if (distance < 0)
@@ -102,6 +104,7 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 glUnused, int width, int height){
 		this.mWidth = width;
 		this.mHeight = height;
+
         calculateDistance();
 		mGLHandler.dealMessage();
 	}
