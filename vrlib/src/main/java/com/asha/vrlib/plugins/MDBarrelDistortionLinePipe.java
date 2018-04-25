@@ -90,8 +90,12 @@ public class MDBarrelDistortionLinePipe extends MDAbsLinePipe {
             return;
         }
         mDrawingCache.unbind();
-
-        int width = (totalWidth - distance) / size;
+        int width;
+        if(size == 1) {
+            width = totalWidth;
+        } else {
+            width = (int)((float)(totalWidth - this.distance) * 1.0F / (float)size);
+        }
         for (int i = 0; i < size; i++){
             GLES20.glViewport((width  + distance)* i, 0, width, totalHeight);
             GLES20.glEnable(GLES20.GL_SCISSOR_TEST);

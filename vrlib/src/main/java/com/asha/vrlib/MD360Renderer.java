@@ -121,7 +121,14 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 
 		int size = mDisplayModeManager.getVisibleSize();
 
-		int width = (int) ((this.mWidth - distance)* 1.0f / size);
+		int width;
+		if (size ==1) {
+			width = (int) (this.mWidth);
+		}
+		else
+		{
+			width = (int) ((this.mWidth - distance) * 1.0f / size);
+		}
 		int height = mHeight;
 
 		// take over
