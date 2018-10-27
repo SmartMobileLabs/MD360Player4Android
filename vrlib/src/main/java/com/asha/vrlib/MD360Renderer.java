@@ -43,6 +43,7 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 	private float y_view_size_mm;
 	private float scaling_factor;
 	private int distance;
+        private boolean paused; 
 
 	// private MDBarrelDistortionPlugin mBarrelDistortionPlugin;
 
@@ -59,7 +60,19 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 		mMainLinePipe = new MDBarrelDistortionLinePipe(mDisplayModeManager);
 		scaling_factor = mDisplayModeManager.getBarrelDistortionConfig().getScale();
 		distance_mm = 0;
+                paused = false; 
 	}
+
+        public void onPause()
+        {
+           paused = true; 
+        }
+ 
+        public void onResume()
+        {
+           paused = false; 
+        }
+ 
 
 	public void setViewSizeMm(float x, float y)
     {
@@ -114,6 +127,7 @@ public class MD360Renderer implements GLSurfaceView.Renderer {
 		// gl thread
 		// 切换策略
 		// 热点拾取
+                if (paused) return;
 		mGLHandler.dealMessage();
 
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);

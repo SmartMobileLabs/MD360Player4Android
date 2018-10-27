@@ -448,12 +448,20 @@ public class MDVRLibrary {
         if (mScreenWrapper != null){
             mScreenWrapper.onResume();
         }
+        if (renderer != null)
+        {
+            renderer.onResume();
+        }
     }
 
     public void onPause(Context context){
         mInteractiveModeManager.onPause(context);
         if (mScreenWrapper != null){
             mScreenWrapper.onPause();
+        }
+        if (renderer != null)
+        {
+            renderer.onPause();
         }
     }
 
