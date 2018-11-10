@@ -1,3 +1,4 @@
+apply from: "$rootProject.projectDir/../EVO_Android_Player_SDK.properties"
 apply plugin: 'com.android.library'
 apply plugin: 'digital.wup.android-maven-publish'
 
@@ -27,12 +28,18 @@ version = snapshot ? "$rootProject.ext.versionName-sml$rootProject.ext.smlVersio
 publishing {
     repositories {
         maven {
-            url snapshot ? "$rootProject.buildDir/repo/snapshots" : "$rootProject.buildDir/repo/releases"
-//            url snapshot ? SmlNexusSnapshotRepo : SmlNexusReleaseRepo
-//            credentials {
-//                username SmlNexusUser
-//                password SmlNexusPw
-//            }
+	   if (UseLocalRepositories)
+           {
+               url snapshot ? "$rootProject.buildDir/repo/snapshots" : "$rootProject.buildDir/repo/releases"
+           }
+           else
+           {
+            url snapshot ? SmlNexusSnapshotRepo : SmlNexusReleaseRepo
+            credentials {
+                username SmlNexusUser
+                password SmlNexusPw
+            }
+          }
         }
     }
     publications {
